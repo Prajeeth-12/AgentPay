@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import AsyncGenerator
 
-import boto3
+import httpx
 
 from config import get_settings
 from agent.prompts import SHOPPING_AGENT_SYSTEM_PROMPT
@@ -17,6 +17,23 @@ from db.database import get_db
 from db.models import AuditEventType
 
 
+def _convert_tools_to_openai_format(anthropic_tools: list[dict]) -> list[dict]:
+    return [
+        {
+            "type": "function",
+            "function": {
+                "name": tool["name"],
+                "description": tool["description"],
+                "parameters": tool["input_schema"],
+            },
+        }
+        for tool in anthropic_tools
+    ]
+
+
+OPENAI_TOOLS = _convert_tools_to_openai_format(AGENT_TOOLS)
+
+
 class ShoppingAgent:
     def __init__(self, session_id: str, agent_id: str, private_key_pem: str):
         self.session_id = session_id
@@ -24,20 +41,6 @@ class ShoppingAgent:
         self.private_key_pem = private_key_pem
         self.messages: list[dict] = []
         self.settings = get_settings()
-
-    def _get_bedrock_client(self):
-        import os
-        os.environ["AWS_CONFIG_FILE"] = ""
-        os.environ["AWS_SHARED_CREDENTIALS_FILE"] = ""
-
-        kwargs = {
-            "region_name": self.settings.aws_region,
-            "aws_access_key_id": self.settings.aws_access_key_id,
-            "aws_secret_access_key": self.settings.aws_secret_access_key,
-        }
-        if self.settings.aws_session_token:
-            kwargs["aws_session_token"] = self.settings.aws_session_token
-        return boto3.client("bedrock-runtime", **kwargs)
 
     async def _get_session_context(self) -> str:
         db = await get_db()
@@ -66,69 +69,78 @@ class ShoppingAgent:
         )
 
     async def process_message(self, user_message: str) -> AsyncGenerator[dict, None]:
-        """Process a user message and yield events (tokens, tool results, final message)."""
         self.messages.append({"role": "user", "content": user_message})
 
         session_context = await self._get_session_context()
         system_prompt = SHOPPING_AGENT_SYSTEM_PROMPT + session_context
 
         while True:
-            response = await self._call_claude(system_prompt)
+            response = await self._call_llm(system_prompt)
 
-            assistant_content = []
-            full_text = ""
-            tool_uses = []
+            message = response.get("choices", [{}])[0].get("message", {})
+            content = message.get("content", "") or ""
+            tool_calls = message.get("tool_calls", []) or []
 
-            for block in response.get("content", []):
-                if block["type"] == "text":
-                    full_text += block["text"]
-                    assistant_content.append(block)
-                    yield {"type": "agent_text", "text": block["text"]}
-                elif block["type"] == "tool_use":
-                    tool_uses.append(block)
-                    assistant_content.append(block)
+            if content:
+                yield {"type": "agent_text", "text": content}
 
-            self.messages.append({"role": "assistant", "content": assistant_content})
+            assistant_msg: dict = {"role": "assistant"}
+            if content:
+                assistant_msg["content"] = content
+            if tool_calls:
+                assistant_msg["tool_calls"] = tool_calls
+            if not content and not tool_calls:
+                assistant_msg["content"] = ""
+            self.messages.append(assistant_msg)
 
-            if not tool_uses:
-                yield {"type": "agent_message", "text": full_text}
+            if not tool_calls:
+                yield {"type": "agent_message", "text": content}
                 break
 
-            tool_results = []
-            for tool_use in tool_uses:
-                result = await self._handle_tool_call(tool_use["name"], tool_use["input"])
-                tool_results.append({
-                    "type": "tool_result",
-                    "tool_use_id": tool_use["id"],
+            for tc in tool_calls:
+                func = tc.get("function", {})
+                tool_name = func.get("name", "")
+                try:
+                    tool_input = json.loads(func.get("arguments", "{}"))
+                except json.JSONDecodeError:
+                    tool_input = {}
+
+                result = await self._handle_tool_call(tool_name, tool_input)
+
+                self.messages.append({
+                    "role": "tool",
+                    "tool_call_id": tc["id"],
                     "content": json.dumps(result["data"]),
                 })
+
                 yield {
                     "type": "tool_result",
-                    "tool_name": tool_use["name"],
-                    "tool_input": tool_use["input"],
+                    "tool_name": tool_name,
+                    "tool_input": tool_input,
                     "result": result,
                 }
 
-            self.messages.append({"role": "user", "content": tool_results})
-
-    async def _call_claude(self, system_prompt: str) -> dict:
-        client = self._get_bedrock_client()
+    async def _call_llm(self, system_prompt: str) -> dict:
+        messages = [{"role": "system", "content": system_prompt}] + self.messages
 
         request_body = {
-            "anthropic_version": "bedrock-2023-05-31",
+            "model": self.settings.llm_model,
+            "messages": messages,
+            "tools": OPENAI_TOOLS,
             "max_tokens": 4096,
-            "system": system_prompt,
-            "messages": self.messages,
-            "tools": AGENT_TOOLS,
         }
 
-        response = client.invoke_model(
-            modelId=self.settings.bedrock_model_id,
-            body=json.dumps(request_body),
-            contentType="application/json",
-        )
-
-        return json.loads(response["body"].read())
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.post(
+                f"{self.settings.llm_base_url}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.settings.llm_api_key}",
+                    "Content-Type": "application/json",
+                },
+                json=request_body,
+            )
+            resp.raise_for_status()
+            return resp.json()
 
     async def _handle_tool_call(self, tool_name: str, tool_input: dict) -> dict:
         if tool_name == "search_catalog":
@@ -404,7 +416,6 @@ class ShoppingAgent:
 
             order_id = f"order_{uuid.uuid4().hex[:12]}"
 
-            # 1. Create closed checkout mandate
             checkout_result = await mandate_manager.create_closed_checkout(
                 session_id=self.session_id,
                 agent_id=self.agent_id,
@@ -425,7 +436,6 @@ class ShoppingAgent:
                     "events": [{"type": "constraint_violation", "details": checkout_result["validation"]}],
                 }
 
-            # 2. Create closed payment mandate
             payment_mandate = await mandate_manager.create_closed_payment(
                 session_id=self.session_id,
                 agent_id=self.agent_id,
@@ -445,7 +455,6 @@ class ShoppingAgent:
                     "events": [{"type": "constraint_violation", "details": payment_mandate["validation"]}],
                 }
 
-            # 3. Create Razorpay order
             item_names = ", ".join(item["product_title"] for item in cart_items)
             razorpay_order = await create_order(
                 amount_paise=total,
@@ -463,7 +472,6 @@ class ShoppingAgent:
                 razorpay_refs={"order_id": razorpay_order["id"]},
             )
 
-            # 4. Create Razorpay payment link
             payment_link = await create_payment_link(
                 amount_paise=total,
                 description=f"AgentPay: {item_names}",
@@ -486,7 +494,6 @@ class ShoppingAgent:
                 },
             )
 
-            # 5. Store payment record
             payment_id = f"pay_{uuid.uuid4().hex[:12]}"
             now = datetime.now(timezone.utc).isoformat()
 
@@ -500,7 +507,6 @@ class ShoppingAgent:
                 ),
             )
 
-            # 6. Update session budget_spent
             await db.execute(
                 "UPDATE sessions SET budget_spent = budget_spent + ?, updated_at = ? WHERE id = ?",
                 (total, now, self.session_id),

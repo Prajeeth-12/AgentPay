@@ -7,6 +7,11 @@ class Settings(BaseSettings):
     razorpay_key_secret: str = ""
     razorpay_webhook_secret: str = ""
 
+    llm_provider: str = "openai_compatible"
+    llm_base_url: str = "https://api.gmi-serving.com/v1"
+    llm_api_key: str = ""
+    llm_model: str = "MiniMaxAI/MiniMax-M3"
+
     aws_access_key_id: str = ""
     aws_secret_access_key: str = ""
     aws_session_token: str = ""
