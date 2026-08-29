@@ -1,6 +1,6 @@
 import { WSEvent } from "./types";
 
-const WS_BASE = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000";
+const WS_BASE = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8001";
 
 export class AgentPaySocket {
   private ws: WebSocket | null = null;

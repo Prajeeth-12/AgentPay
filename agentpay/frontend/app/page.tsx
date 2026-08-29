@@ -8,7 +8,7 @@ import { SessionSetup } from "@/components/SessionSetup";
 import { AgentPaySocket } from "@/lib/websocket";
 import { ChatMessage, Mandate, AuditEntry, Product, WSEvent } from "@/lib/types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001";
 
 export default function Home() {
   const [sessionId, setSessionId] = useState<string | null>(null);
