@@ -11,12 +11,17 @@ from config import get_settings
 from db.database import init_db, get_db
 from db.models import AuditEventType, SessionStatus
 from audit.logger import audit_logger
+from agent.shopping_agent import ShoppingAgent
 from catalog.service import search_products, get_product, list_products, get_categories
 from mandates.manager import mandate_manager
 from mandates.constraints import check_budget
 from payments.razorpay_client import create_order, create_payment_link, verify_webhook_signature
 from payments.webhook_handler import handle_webhook
 from uap.registry import uap_registry
+
+# Active WebSocket connections and agent instances per session
+active_connections: dict[str, WebSocket] = {}
+active_agents: dict[str, ShoppingAgent] = {}
 
 
 @asynccontextmanager
@@ -244,6 +249,74 @@ async def api_get_agent(agent_id: str):
 @app.post("/api/uap/agents/{agent_id}/verify")
 async def api_verify_agent(agent_id: str, requested_budget: int = 0):
     return await uap_registry.verify_agent(agent_id, requested_budget)
+
+
+# ── WebSocket Chat Endpoint ──────────────────────────────
+
+@app.websocket("/ws/{session_id}")
+async def websocket_chat(websocket: WebSocket, session_id: str):
+    await websocket.accept()
+    active_connections[session_id] = websocket
+
+    db = await get_db()
+    try:
+        cursor = await db.execute("SELECT * FROM sessions WHERE id = ?", (session_id,))
+        session = await cursor.fetchone()
+    finally:
+        await db.close()
+
+    if not session:
+        await websocket.send_json({"type": "error", "message": "Session not found"})
+        await websocket.close()
+        return
+
+    agent_data = app.state.default_agent
+    agent = ShoppingAgent(
+        session_id=session_id,
+        agent_id=agent_data["agent_id"],
+        private_key_pem=agent_data["private_key_pem"],
+    )
+    active_agents[session_id] = agent
+
+    await websocket.send_json({
+        "type": "connected",
+        "session_id": session_id,
+        "agent_id": agent_data["agent_id"],
+        "budget_limit": session["budget_limit"],
+    })
+
+    try:
+        while True:
+            data = await websocket.receive_json()
+            msg_type = data.get("type", "")
+
+            if msg_type == "user_message":
+                user_text = data.get("text", "")
+                if not user_text:
+                    continue
+
+                await audit_logger.log(
+                    session_id=session_id,
+                    event_type=AuditEventType.INTENT_REGISTERED,
+                    details={"user_input": user_text},
+                    agent_id=agent_data["agent_id"],
+                )
+
+                try:
+                    async for event in agent.process_message(user_text):
+                        await websocket.send_json(event)
+
+                        for sub_event in event.get("result", {}).get("events", []):
+                            await websocket.send_json(sub_event)
+                except Exception as e:
+                    await websocket.send_json({
+                        "type": "error",
+                        "message": f"Agent error: {str(e)}",
+                    })
+
+    except WebSocketDisconnect:
+        active_connections.pop(session_id, None)
+        active_agents.pop(session_id, None)
 
 
 # ── Health ───────────────────────────────────────────────

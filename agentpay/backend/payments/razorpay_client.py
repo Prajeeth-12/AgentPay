@@ -66,7 +66,7 @@ async def capture_payment(payment_id: str, amount_paise: int, currency: str = "I
 def verify_webhook_signature(body: str, signature: str) -> bool:
     settings = get_settings()
     try:
-        expected = hmac.new(
+        expected = hmac.HMAC(
             settings.razorpay_webhook_secret.encode(),
             body.encode(),
             hashlib.sha256,
@@ -79,7 +79,7 @@ def verify_webhook_signature(body: str, signature: str) -> bool:
 def verify_payment_signature(order_id: str, payment_id: str, signature: str) -> bool:
     settings = get_settings()
     message = f"{order_id}|{payment_id}"
-    expected = hmac.new(
+    expected = hmac.HMAC(
         settings.razorpay_key_secret.encode(),
         message.encode(),
         hashlib.sha256,
