@@ -38,7 +38,7 @@ async def create_payment_link(
         "customer": {
             "name": customer_name,
             "email": customer_email or "test@agentpay.dev",
-            "contact": customer_phone or "+919999999999",
+            "contact": customer_phone or "+919876543210",
         },
         "notify": {"sms": False, "email": False},
         "notes": notes or {},

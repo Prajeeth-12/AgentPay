@@ -1,7 +1,13 @@
 import json
+import os
 import uuid
 from datetime import datetime, timezone
 from contextlib import asynccontextmanager
+
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
+os.environ["AWS_CONFIG_FILE"] = ""
+os.environ["AWS_SHARED_CREDENTIALS_FILE"] = ""
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware

@@ -9,7 +9,8 @@ class Settings(BaseSettings):
 
     aws_access_key_id: str = ""
     aws_secret_access_key: str = ""
-    aws_region: str = "us-east-1"
+    aws_session_token: str = ""
+    aws_region: str = "us-west-2"
     bedrock_model_id: str = "us.anthropic.claude-opus-4-6-v1"
 
     app_host: str = "0.0.0.0"
@@ -20,6 +21,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = "../.env"
         env_file_encoding = "utf-8"
+        extra = "ignore"
 
 
 @lru_cache()

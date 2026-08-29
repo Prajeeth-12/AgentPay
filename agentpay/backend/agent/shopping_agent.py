@@ -26,12 +26,18 @@ class ShoppingAgent:
         self.settings = get_settings()
 
     def _get_bedrock_client(self):
-        return boto3.client(
-            "bedrock-runtime",
-            region_name=self.settings.aws_region,
-            aws_access_key_id=self.settings.aws_access_key_id,
-            aws_secret_access_key=self.settings.aws_secret_access_key,
-        )
+        import os
+        os.environ["AWS_CONFIG_FILE"] = ""
+        os.environ["AWS_SHARED_CREDENTIALS_FILE"] = ""
+
+        kwargs = {
+            "region_name": self.settings.aws_region,
+            "aws_access_key_id": self.settings.aws_access_key_id,
+            "aws_secret_access_key": self.settings.aws_secret_access_key,
+        }
+        if self.settings.aws_session_token:
+            kwargs["aws_session_token"] = self.settings.aws_session_token
+        return boto3.client("bedrock-runtime", **kwargs)
 
     async def _get_session_context(self) -> str:
         db = await get_db()
