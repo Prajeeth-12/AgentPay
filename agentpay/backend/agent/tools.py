@@ -98,4 +98,58 @@ AGENT_TOOLS = [
             "properties": {},
         },
     },
+    {
+        "name": "check_payment_status",
+        "description": "Check the real-time status of a Razorpay payment via MCP. Use this to verify if a payment link has been paid, or to check the status of any order.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "razorpay_order_id": {
+                    "type": "string",
+                    "description": "The Razorpay order ID (e.g., 'order_xxx')",
+                },
+            },
+            "required": ["razorpay_order_id"],
+        },
+    },
+    {
+        "name": "create_upi_qr",
+        "description": "Create a UPI QR code for payment as an alternative to payment links. Powered by Razorpay MCP Server. Use when the user prefers QR-based UPI payment.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "amount_paise": {
+                    "type": "integer",
+                    "description": "Amount in paise",
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Payment description",
+                },
+            },
+            "required": ["amount_paise", "description"],
+        },
+    },
+    {
+        "name": "request_refund",
+        "description": "Request a refund for a captured payment via Razorpay MCP. Use when the user wants to return an item or cancel after payment.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "payment_id": {
+                    "type": "string",
+                    "description": "The Razorpay payment ID to refund",
+                },
+                "amount_paise": {
+                    "type": "integer",
+                    "description": "Refund amount in paise (partial or full)",
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Reason for refund",
+                },
+            },
+            "required": ["payment_id", "amount_paise"],
+        },
+    },
 ]

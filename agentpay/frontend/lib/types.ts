@@ -40,8 +40,8 @@ export interface AuditEntry {
   mandate_id?: string;
   mandate_type?: string;
   details: Record<string, unknown>;
-  razorpay_refs?: Record<string, unknown>;
-  constraint_check?: Record<string, unknown>;
+  razorpay_refs?: { order_id?: string; payment_id?: string; link_id?: string };
+  constraint_check?: { passed: boolean; reason?: string };
 }
 
 export interface ChatMessage {

@@ -44,7 +44,7 @@ export function MandateViewer({ mandates, budgetLimit, budgetSpent }: MandateVie
               ₹{(remaining / 100).toLocaleString("en-IN")} remaining
             </span>
           </div>
-          <div className="w-full bg-zinc-700 rounded-full h-3 overflow-hidden">
+          <div className="w-full bg-zinc-700 rounded-full h-3 overflow-hidden" role="progressbar" aria-valuenow={budgetSpent} aria-valuemin={0} aria-valuemax={budgetLimit} aria-label="Budget usage">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
                 spentPercent > 90 ? "bg-red-500" :

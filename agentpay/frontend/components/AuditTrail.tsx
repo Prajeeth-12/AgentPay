@@ -52,7 +52,7 @@ export function AuditTrail({ entries }: AuditTrailProps) {
         </span>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto" role="log" aria-live="polite" aria-label="Audit trail events">
         {entries.length === 0 ? (
           <div className="text-center text-zinc-500 mt-12">
             <div className="text-2xl mb-2">📝</div>
@@ -85,25 +85,23 @@ export function AuditTrail({ entries }: AuditTrailProps) {
 
                     {entry.constraint_check && (
                       <div className="mt-1">
-                        {(entry.constraint_check as Record<string, unknown>).passed ? (
+                        {entry.constraint_check.passed ? (
                           <span className="text-[10px] text-emerald-500">
                             Constraint passed
                           </span>
                         ) : (
                           <span className="text-[10px] text-red-400">
-                            {String((entry.constraint_check as Record<string, unknown>).reason || "Constraint failed").replace(/_/g, " ")}
+                            {(entry.constraint_check.reason || "Constraint failed").replace(/_/g, " ")}
                           </span>
                         )}
                       </div>
                     )}
 
-                    {entry.razorpay_refs && (
+                    {entry.razorpay_refs?.order_id && (
                       <div className="mt-1 space-x-2">
-                        {String((entry.razorpay_refs as Record<string, unknown>).order_id || "") && (
-                          <span className="text-[10px] font-mono text-zinc-500">
-                            {"order: "}{String((entry.razorpay_refs as Record<string, unknown>).order_id).slice(0, 20)}{"..."}
-                          </span>
-                        )}
+                        <span className="text-[10px] font-mono text-zinc-500">
+                          order: {entry.razorpay_refs.order_id.slice(0, 20)}...
+                        </span>
                       </div>
                     )}
 

@@ -12,6 +12,7 @@ from catalog.service import search_products, get_product
 from mandates.manager import mandate_manager
 from mandates.constraints import check_budget as do_check_budget
 from payments.razorpay_client import create_order, create_payment_link
+from mcp.razorpay_mcp import fetch_payment_status, create_qr_code, initiate_refund
 from audit.logger import audit_logger
 from db.database import get_db
 from db.models import AuditEventType
@@ -54,7 +55,7 @@ class ShoppingAgent:
             await db.close()
 
         if not row:
-            return ""
+            return "\n\nWARNING: Session not found. Do not proceed with any purchases."
 
         budget_limit = row["budget_limit"]
         budget_spent = row["budget_spent"]
@@ -104,6 +105,19 @@ class ShoppingAgent:
                     tool_input = json.loads(func.get("arguments", "{}"))
                 except json.JSONDecodeError:
                     tool_input = {}
+                    result = await self._handle_tool_call(tool_name, tool_input)
+                    self.messages.append({
+                        "role": "tool",
+                        "tool_call_id": tc["id"],
+                        "content": json.dumps({"error": "Malformed tool arguments from LLM"}),
+                    })
+                    yield {
+                        "type": "tool_result",
+                        "tool_name": tool_name,
+                        "tool_input": tool_input,
+                        "result": {"data": {"error": "Malformed tool arguments"}, "events": []},
+                    }
+                    continue
 
                 result = await self._handle_tool_call(tool_name, tool_input)
 
@@ -157,6 +171,12 @@ class ShoppingAgent:
             return await self._tool_remove_from_cart(tool_input)
         elif tool_name == "execute_payment":
             return await self._tool_execute_payment()
+        elif tool_name == "check_payment_status":
+            return await self._tool_check_payment_status(tool_input)
+        elif tool_name == "create_upi_qr":
+            return await self._tool_create_upi_qr(tool_input)
+        elif tool_name == "request_refund":
+            return await self._tool_request_refund(tool_input)
         else:
             return {"data": {"error": f"Unknown tool: {tool_name}"}, "events": []}
 
@@ -223,13 +243,17 @@ class ShoppingAgent:
         finally:
             await db.close()
 
-        result = do_check_budget(input["proposed_amount"], row["budget_limit"], row["budget_spent"])
+        if not row:
+            return {"data": {"error": "Session not found"}, "events": []}
+
+        proposed = input.get("proposed_amount", 0)
+        result = do_check_budget(proposed, row["budget_limit"], row["budget_spent"])
 
         result["budget_display"] = {
             "limit": f"₹{row['budget_limit'] / 100:,.0f}",
             "spent": f"₹{row['budget_spent'] / 100:,.0f}",
             "remaining": f"₹{(row['budget_limit'] - row['budget_spent']) / 100:,.0f}",
-            "proposed": f"₹{input['proposed_amount'] / 100:,.0f}",
+            "proposed": f"₹{proposed / 100:,.0f}",
         }
 
         return {
@@ -334,6 +358,9 @@ class ShoppingAgent:
             session = await cursor2.fetchone()
         finally:
             await db.close()
+
+        if not session:
+            return {"data": {"error": "Session not found"}, "events": []}
 
         cart_items = [
             {
@@ -534,4 +561,92 @@ class ShoppingAgent:
                 {"type": "payment_link", "url": payment_link["short_url"], "amount": total},
                 {"type": "budget_update", "spent": total, "limit": 0},
             ],
+        }
+
+    async def _tool_check_payment_status(self, input: dict) -> dict:
+        order_id = input.get("razorpay_order_id", "")
+        if not order_id:
+            return {"data": {"error": "razorpay_order_id is required"}, "events": []}
+
+        status = await fetch_payment_status(order_id)
+
+        await audit_logger.log(
+            session_id=self.session_id,
+            event_type=AuditEventType.PAYMENT_AUTHORIZED if status.get("status") == "authorized" else AuditEventType.CATALOG_SEARCHED,
+            details={"mcp_tool": "check_payment_status", "order_id": order_id, "status": status.get("status")},
+            agent_id=self.agent_id,
+            razorpay_refs={"order_id": order_id, "payment_id": status.get("payment_id", "")},
+        )
+
+        return {"data": status, "events": []}
+
+    async def _tool_create_upi_qr(self, input: dict) -> dict:
+        amount = input.get("amount_paise", 0)
+        description = input.get("description", "AgentPay Purchase")
+
+        if not amount:
+            return {"data": {"error": "amount_paise is required"}, "events": []}
+
+        result = await create_qr_code(amount, description, self.session_id)
+
+        if result.get("error"):
+            return {"data": result, "events": []}
+
+        await audit_logger.log(
+            session_id=self.session_id,
+            event_type=AuditEventType.PAYMENT_LINK_CREATED,
+            details={
+                "mcp_tool": "create_upi_qr",
+                "qr_id": result.get("qr_id"),
+                "amount": amount,
+            },
+            agent_id=self.agent_id,
+        )
+
+        return {
+            "data": {
+                "qr_id": result.get("qr_id"),
+                "image_url": result.get("image_url"),
+                "amount_display": f"₹{amount / 100:,.0f}",
+                "method": "UPI QR Code",
+                "mcp_powered": True,
+            },
+            "events": [{"type": "payment_link", "url": result.get("image_url", ""), "amount": amount}],
+        }
+
+    async def _tool_request_refund(self, input: dict) -> dict:
+        payment_id = input.get("payment_id", "")
+        amount = input.get("amount_paise", 0)
+        reason = input.get("reason", "customer_request")
+
+        if not payment_id or not amount:
+            return {"data": {"error": "payment_id and amount_paise are required"}, "events": []}
+
+        result = await initiate_refund(payment_id, amount, reason)
+
+        if result.get("error"):
+            return {"data": result, "events": []}
+
+        await audit_logger.log(
+            session_id=self.session_id,
+            event_type=AuditEventType.PAYMENT_FAILED,
+            details={
+                "mcp_tool": "request_refund",
+                "refund_id": result.get("refund_id"),
+                "payment_id": payment_id,
+                "amount": amount,
+                "reason": reason,
+            },
+            agent_id=self.agent_id,
+            razorpay_refs={"payment_id": payment_id},
+        )
+
+        return {
+            "data": {
+                "refund_id": result.get("refund_id"),
+                "status": result.get("status"),
+                "amount_display": f"₹{amount / 100:,.0f}",
+                "mcp_powered": True,
+            },
+            "events": [],
         }

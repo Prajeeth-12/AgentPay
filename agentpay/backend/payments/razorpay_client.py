@@ -1,8 +1,12 @@
+import asyncio
 import hmac
 import hashlib
+import logging
 import razorpay
 
 from config import get_settings
+
+logger = logging.getLogger(__name__)
 
 
 def get_razorpay_client() -> razorpay.Client:
@@ -18,7 +22,7 @@ async def create_order(amount_paise: int, currency: str = "INR", receipt: str = 
         "receipt": receipt,
         "notes": notes or {},
     }
-    return client.order.create(data=order_data)
+    return await asyncio.to_thread(client.order.create, data=order_data)
 
 
 async def create_payment_link(
@@ -45,22 +49,22 @@ async def create_payment_link(
     }
     if order_id:
         link_data["order_id"] = order_id
-    return client.payment_link.create(data=link_data)
+    return await asyncio.to_thread(client.payment_link.create, data=link_data)
 
 
 async def fetch_order(order_id: str) -> dict:
     client = get_razorpay_client()
-    return client.order.fetch(order_id)
+    return await asyncio.to_thread(client.order.fetch, order_id)
 
 
 async def fetch_payment(payment_id: str) -> dict:
     client = get_razorpay_client()
-    return client.payment.fetch(payment_id)
+    return await asyncio.to_thread(client.payment.fetch, payment_id)
 
 
 async def capture_payment(payment_id: str, amount_paise: int, currency: str = "INR") -> dict:
     client = get_razorpay_client()
-    return client.payment.capture(payment_id, amount_paise, {"currency": currency})
+    return await asyncio.to_thread(client.payment.capture, payment_id, amount_paise, {"currency": currency})
 
 
 def verify_webhook_signature(body: str, signature: str) -> bool:
@@ -72,7 +76,8 @@ def verify_webhook_signature(body: str, signature: str) -> bool:
             hashlib.sha256,
         ).hexdigest()
         return hmac.compare_digest(expected, signature)
-    except Exception:
+    except (TypeError, AttributeError, ValueError) as e:
+        logger.error("Webhook signature verification error: %s", e)
         return False
 
 

@@ -4,10 +4,15 @@ from typing import Optional
 
 CATALOG_PATH = os.path.join(os.path.dirname(__file__), "data", "products.json")
 
+_CATALOG: list[dict] | None = None
+
 
 def _load_catalog() -> list[dict]:
-    with open(CATALOG_PATH, "r") as f:
-        return json.load(f)
+    global _CATALOG
+    if _CATALOG is None:
+        with open(CATALOG_PATH, "r") as f:
+            _CATALOG = json.load(f)
+    return _CATALOG
 
 
 def search_products(

@@ -376,12 +376,30 @@ class MandateManager:
                 (session_id, mandate_type.value),
             )
             row = await cursor.fetchone()
+
+            if not row:
+                return None
+
+            mandate = dict(row)
+
+            agent_cursor = await db.execute(
+                "SELECT public_key_jwk FROM agents WHERE id = (SELECT agent_id FROM sessions WHERE id = ?)",
+                (session_id,),
+            )
+            agent_row = await agent_cursor.fetchone()
         finally:
             await db.close()
 
-        if not row:
-            return None
-        return dict(row)
+        if agent_row and mandate.get("sd_jwt"):
+            try:
+                public_key_jwk = json.loads(agent_row["public_key_jwk"])
+                verified_payload = verify_mandate(mandate["sd_jwt"], public_key_jwk)
+                if verified_payload.get("constraints"):
+                    mandate["constraints"] = json.dumps(verified_payload["constraints"])
+            except Exception:
+                pass
+
+        return mandate
 
 
 mandate_manager = MandateManager()

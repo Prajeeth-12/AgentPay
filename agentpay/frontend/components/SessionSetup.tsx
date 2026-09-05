@@ -5,6 +5,7 @@ import { useState } from "react";
 interface SessionSetupProps {
   onCreateSession: (budgetLimit: number) => void;
   isCreating: boolean;
+  error?: string | null;
 }
 
 const PRESETS = [
@@ -14,7 +15,7 @@ const PRESETS = [
   { label: "₹10,000", value: 1000000 },
 ];
 
-export function SessionSetup({ onCreateSession, isCreating }: SessionSetupProps) {
+export function SessionSetup({ onCreateSession, isCreating, error }: SessionSetupProps) {
   const [budget, setBudget] = useState(200000);
 
   return (
@@ -39,7 +40,7 @@ export function SessionSetup({ onCreateSession, isCreating }: SessionSetupProps)
             <label className="block text-sm font-medium text-zinc-300 mb-3">
               Set your spending budget
             </label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {PRESETS.map((p) => (
                 <button
                   key={p.value}
@@ -68,6 +69,12 @@ export function SessionSetup({ onCreateSession, isCreating }: SessionSetupProps)
               <span>ES256 signed</span>
             </div>
           </div>
+
+          {error && (
+            <div className="bg-red-900/30 border border-red-700/50 rounded-xl px-4 py-3">
+              <p className="text-sm text-red-300">{error}</p>
+            </div>
+          )}
 
           <button
             onClick={() => onCreateSession(budget)}

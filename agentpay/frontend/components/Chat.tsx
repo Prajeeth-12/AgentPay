@@ -25,6 +25,7 @@ export function Chat({ messages, onSend, isLoading, streamingText }: ChatProps) 
     if (!input.trim() || isLoading) return;
     onSend(input.trim());
     setInput("");
+    inputRef.current?.focus();
   };
 
   return (
@@ -35,7 +36,7 @@ export function Chat({ messages, onSend, isLoading, streamingText }: ChatProps) 
         </h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4" role="log" aria-live="polite" aria-label="Chat messages">
         {messages.length === 0 && (
           <div className="text-center text-zinc-500 mt-12 space-y-2">
             <div className="text-3xl">🛍️</div>
@@ -90,13 +91,13 @@ export function Chat({ messages, onSend, isLoading, streamingText }: ChatProps) 
           <div className="flex justify-start">
             <div className="max-w-[85%] rounded-2xl px-4 py-2.5 text-sm bg-zinc-800 text-zinc-100">
               <p className="whitespace-pre-wrap">{streamingText}</p>
-              <span className="inline-block w-1.5 h-4 bg-blue-400 animate-pulse ml-0.5" />
+              <span className="inline-block w-1.5 h-4 bg-blue-400 animate-pulse ml-0.5" aria-hidden="true" />
             </div>
           </div>
         )}
 
         {isLoading && !streamingText && (
-          <div className="flex justify-start">
+          <div className="flex justify-start" role="status" aria-label="Agent is thinking">
             <div className="bg-zinc-800 rounded-2xl px-4 py-3">
               <div className="flex space-x-1.5">
                 <div className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -118,6 +119,7 @@ export function Chat({ messages, onSend, isLoading, streamingText }: ChatProps) 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Tell me what you'd like to buy..."
+            aria-label="Message to shopping agent"
             className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50"
             disabled={isLoading}
           />

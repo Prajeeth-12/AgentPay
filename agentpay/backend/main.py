@@ -24,6 +24,7 @@ from mandates.constraints import check_budget
 from payments.razorpay_client import create_order, create_payment_link, verify_webhook_signature
 from payments.webhook_handler import handle_webhook
 from uap.registry import uap_registry
+from mcp.razorpay_mcp import fetch_payment_status, create_qr_code, initiate_refund, fetch_settlements, detect_payment_method_preference
 
 # Active WebSocket connections and agent instances per session
 active_connections: dict[str, WebSocket] = {}
@@ -51,7 +52,11 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:3001",
+        os.environ.get("FRONTEND_URL", "http://localhost:3000"),
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -227,14 +232,62 @@ async def razorpay_webhook(request: Request):
     signature = request.headers.get("X-Razorpay-Signature", "")
 
     settings = get_settings()
-    if settings.razorpay_webhook_secret and signature:
-        if not verify_webhook_signature(body.decode(), signature):
-            raise HTTPException(status_code=400, detail="Invalid signature")
+    if settings.razorpay_webhook_secret:
+        if not signature or not verify_webhook_signature(body.decode(), signature):
+            raise HTTPException(status_code=400, detail="Invalid or missing webhook signature")
 
-    payload = json.loads(body)
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON body")
     event_type = payload.get("event", "")
     result = await handle_webhook(event_type, payload)
     return result
+
+
+# ── MCP-Powered Endpoints ───────────────────────────────
+
+@app.get("/api/mcp/payment-status/{razorpay_order_id}")
+async def mcp_payment_status(razorpay_order_id: str):
+    return await fetch_payment_status(razorpay_order_id)
+
+
+@app.post("/api/mcp/qr-code")
+async def mcp_create_qr(amount_paise: int, description: str = "AgentPay", session_id: str = ""):
+    return await create_qr_code(amount_paise, description, session_id)
+
+
+@app.post("/api/mcp/refund")
+async def mcp_refund(payment_id: str, amount_paise: int, reason: str = "customer_request"):
+    return await initiate_refund(payment_id, amount_paise, reason)
+
+
+@app.get("/api/mcp/settlements")
+async def mcp_settlements(count: int = 10):
+    return await fetch_settlements(count)
+
+
+@app.get("/api/mcp/payment-methods")
+async def mcp_payment_methods(session_id: str = ""):
+    return await detect_payment_method_preference(session_id)
+
+
+@app.get("/api/mcp/info")
+async def mcp_info():
+    return {
+        "mcp_server": "razorpay/mcp",
+        "version": "1.0",
+        "capabilities": [
+            "payment_status_tracking",
+            "upi_qr_generation",
+            "refund_processing",
+            "settlement_queries",
+            "payment_method_detection",
+        ],
+        "protocol": "Model Context Protocol (MCP)",
+        "provider": "Razorpay",
+        "integration": "AgentPay UAP + AP2 + MCP",
+    }
 
 
 # ── UAP Registry Endpoints ───────────────────────────────
@@ -320,7 +373,7 @@ async def websocket_chat(websocket: WebSocket, session_id: str):
                         "message": f"Agent error: {str(e)}",
                     })
 
-    except WebSocketDisconnect:
+    except (WebSocketDisconnect, Exception):
         active_connections.pop(session_id, None)
         active_agents.pop(session_id, None)
 

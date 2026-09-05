@@ -45,14 +45,14 @@ def check_merchant(merchant_id: str, allowed_merchants: list[dict]) -> dict:
 
 
 def check_amount_range(amount: int, min_amount: int = 0, max_amount: int = 0) -> dict:
-    if max_amount and amount > max_amount:
+    if max_amount is not None and max_amount > 0 and amount > max_amount:
         return {
             "passed": False,
             "reason": "amount_exceeds_max",
             "amount": amount,
             "max": max_amount,
         }
-    if min_amount and amount < min_amount:
+    if min_amount is not None and min_amount > 0 and amount < min_amount:
         return {
             "passed": False,
             "reason": "amount_below_min",

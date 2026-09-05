@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description: "India's First UAP-Compatible Agentic Commerce Platform with AP2 Mandates",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"

@@ -48,7 +48,10 @@ def verify_mandate(token: str, public_key_jwk: dict) -> dict:
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )
-    return jwt.decode(token, public_pem, algorithms=["ES256"])
+    return jwt.decode(
+        token, public_pem, algorithms=["ES256"],
+        options={"verify_exp": True, "require": ["iat"]},
+    )
 
 
 def hash_mandate(token: str) -> str:
