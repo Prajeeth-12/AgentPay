@@ -25,14 +25,40 @@ def search_products(
     products = _load_catalog()
     results = []
 
-    query_lower = query.lower()
-    for p in products:
-        if query_lower:
-            searchable = f"{p['name']} {p.get('description', '')} {p.get('category', '')} {p.get('brand', {}).get('name', '')}".lower()
-            if query_lower not in searchable:
-                continue
+    query_lower = query.lower().strip()
+    stopwords = {
+        "products", "product", "all", "items", "item", "anything", "catalog",
+        "everything", "goods", "shop", "what", "there", "list", "show", "under",
+        "below", "less", "than", "for", "with", "rupees", "rupee", "rs", "inr",
+        "and", "the", "find", "get", "buy", "me", "some", "give", "available"
+    }
 
-        price = p["offers"]["price"]
+    # Normalize max_price if passed in Rupees instead of paise (e.g. 2000 -> 200000)
+    if max_price:
+        try:
+            max_p = int(max_price)
+            if 0 < max_p < 10000:
+                max_p *= 100
+            max_price = max_p
+        except (ValueError, TypeError):
+            max_price = 0
+
+    if min_price:
+        try:
+            min_p = int(min_price)
+            if 0 < min_p < 10000:
+                min_p *= 100
+            min_price = min_p
+        except (ValueError, TypeError):
+            min_price = 0
+
+    # Extract meaningful keywords excluding stopwords and pure digits
+    tokens = [w for w in query_lower.split() if len(w) > 1 and w not in stopwords and not w.isdigit()]
+    is_generic = len(tokens) == 0
+
+    scored_results = []
+    for p in products:
+        price = int(p["offers"]["price"])
         if max_price and price > max_price:
             continue
         if min_price and price < min_price:
@@ -42,7 +68,22 @@ def search_products(
             if category.lower() not in p.get("category", "").lower():
                 continue
 
-        results.append(p)
+        if not is_generic and tokens:
+            searchable = f"{p['name']} {p.get('description', '')} {p.get('category', '')} {p.get('brand', {}).get('name', '')}".lower()
+            score = sum(1 for t in tokens if t in searchable)
+            if score == 0:
+                continue
+            scored_results.append((score, p))
+        else:
+            scored_results.append((1, p))
+
+    # Sort by relevance score descending
+    scored_results.sort(key=lambda x: x[0], reverse=True)
+    results = [p for _, p in scored_results]
+
+    # If no exact token matches, return top in-budget products as fallback
+    if not results and products:
+        results = [p for p in products if (not max_price or int(p["offers"]["price"]) <= max_price)][:limit]
 
     return results[:limit]
 

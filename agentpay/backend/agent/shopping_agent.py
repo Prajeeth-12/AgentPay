@@ -1,9 +1,13 @@
 import json
+import logging
 import uuid
 from datetime import datetime, timezone
 from typing import AsyncGenerator
 
+import asyncio
 import httpx
+
+logger = logging.getLogger(__name__)
 
 from config import get_settings
 from agent.prompts import SHOPPING_AGENT_SYSTEM_PROMPT
@@ -51,6 +55,12 @@ class ShoppingAgent:
                 (self.session_id,),
             )
             row = await cursor.fetchone()
+
+            cart_cursor = await db.execute(
+                "SELECT product_id, product_title, price, quantity FROM cart_items WHERE session_id = ?",
+                (self.session_id,),
+            )
+            cart_items = await cart_cursor.fetchall()
         finally:
             await db.close()
 
@@ -61,11 +71,18 @@ class ShoppingAgent:
         budget_spent = row["budget_spent"]
         remaining = budget_limit - budget_spent
 
+        cart_desc = "Cart is currently empty."
+        if cart_items:
+            cart_lines = [f"  • {item['product_title']} (x{item['quantity']}) - ₹{item['price'] / 100:,.0f}" for item in cart_items]
+            cart_desc = "Current Cart:\n" + "\n".join(cart_lines)
+
         return (
             f"\n\nCurrent session context:\n"
             f"- Budget limit: ₹{budget_limit / 100:,.0f}\n"
             f"- Budget spent: ₹{budget_spent / 100:,.0f}\n"
             f"- Budget remaining: ₹{remaining / 100:,.0f}\n"
+            f"- {cart_desc}\n"
+            f"- Available Store Categories: Footwear (Running & Casual Shoes), Electronics (Audio, Wearables, E-Readers, Accessories), Clothing (T-Shirts, Jeans, Hoodies), Books (Tech & Self-Help).\n"
             f"- Session ID: {self.session_id}\n"
         )
 
@@ -76,26 +93,30 @@ class ShoppingAgent:
         system_prompt = SHOPPING_AGENT_SYSTEM_PROMPT + session_context
 
         while True:
+            logger.info(f"Calling LLM for session {self.session_id} with {len(self.messages)} messages...")
             response = await self._call_llm(system_prompt)
 
             message = response.get("choices", [{}])[0].get("message", {})
             content = message.get("content", "") or ""
             tool_calls = message.get("tool_calls", []) or []
+            logger.info(f"LLM Response: content={content[:50]!r}, tool_calls={[tc.get('function', {}).get('name') for tc in tool_calls]}")
 
-            if content:
+            if content and not tool_calls:
                 yield {"type": "agent_text", "text": content}
 
-            assistant_msg: dict = {"role": "assistant"}
-            if content:
-                assistant_msg["content"] = content
+            assistant_msg: dict = {
+                "role": "assistant",
+                "content": content if content else None,
+            }
             if tool_calls:
                 assistant_msg["tool_calls"] = tool_calls
-            if not content and not tool_calls:
-                assistant_msg["content"] = ""
             self.messages.append(assistant_msg)
 
             if not tool_calls:
-                yield {"type": "agent_message", "text": content}
+                final_text = content or ""
+                if not final_text and any(m.get("role") == "tool" for m in self.messages):
+                    final_text = "Here are the matching options from our catalog within your budget:"
+                yield {"type": "agent_message", "text": final_text}
                 break
 
             for tc in tool_calls:
@@ -144,17 +165,29 @@ class ShoppingAgent:
             "max_tokens": 4096,
         }
 
-        async with httpx.AsyncClient(timeout=60) as client:
-            resp = await client.post(
-                f"{self.settings.llm_base_url}/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {self.settings.llm_api_key}",
-                    "Content-Type": "application/json",
-                },
-                json=request_body,
-            )
-            resp.raise_for_status()
-            return resp.json()
+        max_retries = 3
+        for attempt in range(max_retries):
+            async with httpx.AsyncClient(timeout=60) as client:
+                try:
+                    resp = await client.post(
+                        f"{self.settings.llm_base_url}/chat/completions",
+                        headers={
+                            "Authorization": f"Bearer {self.settings.llm_api_key}",
+                            "Content-Type": "application/json",
+                        },
+                        json=request_body,
+                    )
+                    if resp.status_code == 429 or resp.status_code >= 500:
+                        if attempt < max_retries - 1:
+                            await asyncio.sleep(2 * (attempt + 1))
+                            continue
+                    resp.raise_for_status()
+                    return resp.json()
+                except (httpx.HTTPStatusError, httpx.RequestError) as e:
+                    if attempt < max_retries - 1:
+                        await asyncio.sleep(2 * (attempt + 1))
+                        continue
+                    raise e
 
     async def _handle_tool_call(self, tool_name: str, tool_input: dict) -> dict:
         if tool_name == "search_catalog":
@@ -266,8 +299,8 @@ class ShoppingAgent:
         if not product:
             return {"data": {"error": "Product not found"}, "events": []}
 
-        price = product["offers"]["price"]
-        quantity = input.get("quantity", 1)
+        price = int(product["offers"]["price"])
+        quantity = int(input.get("quantity", 1))
 
         db = await get_db()
         try:

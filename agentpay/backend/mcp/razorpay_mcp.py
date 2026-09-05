@@ -82,7 +82,7 @@ async def initiate_refund(payment_id: str, amount_paise: int, reason: str = "cus
             "speed": "normal",
             "notes": {"reason": reason, "source": "agentpay_mcp"},
         }
-        result = await asyncio.to_thread(client.payment.refund, payment_id, amount_paise, refund_data)
+        result = await asyncio.to_thread(client.payment.refund, payment_id, refund_data)
         return {
             "refund_id": result.get("id"),
             "payment_id": payment_id,
