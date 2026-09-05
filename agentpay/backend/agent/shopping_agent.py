@@ -571,6 +571,10 @@ class ShoppingAgent:
                 "UPDATE sessions SET budget_spent = budget_spent + ?, updated_at = ? WHERE id = ?",
                 (total, now, self.session_id),
             )
+            await db.execute(
+                "DELETE FROM cart_items WHERE session_id = ?",
+                (self.session_id,),
+            )
             await db.commit()
         finally:
             await db.close()
