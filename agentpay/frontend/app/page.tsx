@@ -29,6 +29,7 @@ export default function Home() {
   const [auditEntries, setAuditEntries] = useState<AuditEntry[]>([]);
   const [budgetLimit, setBudgetLimit] = useState(0);
   const [budgetSpent, setBudgetSpent] = useState(0);
+  const [cartTotal, setCartTotal] = useState(0);
 
   const socketRef = useRef<AgentPaySocket | null>(null);
   const pendingProductsRef = useRef<Product[]>([]);
@@ -104,11 +105,15 @@ export default function Home() {
       }
 
       case "budget_update":
-        // budget_update from WS carries absolute spent value from server via polling
-        // we only use it to set the limit if provided
+        if (typeof event.spent === "number") setBudgetSpent(event.spent as number);
+        if (typeof event.cart_total === "number") setCartTotal(event.cart_total as number);
         if (typeof event.limit === "number" && (event.limit as number) > 0) {
           setBudgetLimit(event.limit as number);
         }
+        break;
+
+      case "cart_updated":
+        if (typeof event.cart_total === "number") setCartTotal(event.cart_total as number);
         break;
 
       case "constraint_violation": {
@@ -168,6 +173,12 @@ export default function Home() {
       setSessionId(data.session_id);
       setBudgetLimit(budget);
       setBudgetSpent(0);
+      setCartTotal(0);
+
+      try {
+        localStorage.setItem("agentpay_session_id", data.session_id);
+        localStorage.setItem("agentpay_budget_limit", String(budget));
+      } catch {}
 
       const mandatesRes = await fetch(`${API_BASE}/api/sessions/${data.session_id}/mandates`);
       if (mandatesRes.ok) {
@@ -193,6 +204,21 @@ export default function Home() {
     }
   };
 
+  const resetSession = () => {
+    socketRef.current?.disconnect();
+    socketRef.current = null;
+    try {
+      localStorage.removeItem("agentpay_session_id");
+      localStorage.removeItem("agentpay_budget_limit");
+    } catch {}
+    setSessionId(null);
+    setMessages([]);
+    setMandates([]);
+    setAuditEntries([]);
+    setBudgetSpent(0);
+    setCartTotal(0);
+  };
+
   const sendMessage = (text: string) => {
     const sent = socketRef.current?.sendMessage(text);
     if (!sent) {
@@ -216,6 +242,42 @@ export default function Home() {
     setIsLoading(true);
     setStreamingText("");
   };
+
+  // Restore session from localStorage on initial page load
+  useEffect(() => {
+    const savedSessionId = typeof window !== "undefined" ? localStorage.getItem("agentpay_session_id") : null;
+    if (!savedSessionId) return;
+
+    async function restoreSession(id: string) {
+      try {
+        const [sessionRes, mandatesRes, auditRes] = await Promise.all([
+          fetch(`${API_BASE}/api/sessions/${id}`),
+          fetch(`${API_BASE}/api/sessions/${id}/mandates`),
+          fetch(`${API_BASE}/api/sessions/${id}/audit`),
+        ]);
+        if (sessionRes.ok) {
+          const sessionData = await sessionRes.json();
+          setSessionId(id);
+          setBudgetLimit(sessionData.budget_limit || 0);
+          setBudgetSpent(sessionData.budget_spent || 0);
+          setCartTotal(sessionData.cart_total || 0);
+
+          if (mandatesRes.ok) setMandates(await mandatesRes.json());
+          if (auditRes.ok) setAuditEntries(await auditRes.json());
+
+          const socket = new AgentPaySocket(id, handleWSEvent, handleStatusChange);
+          socket.connect();
+          socketRef.current = socket;
+        } else {
+          localStorage.removeItem("agentpay_session_id");
+          localStorage.removeItem("agentpay_budget_limit");
+        }
+      } catch (e) {
+        console.error("Failed to restore session:", e);
+      }
+    }
+    restoreSession(savedSessionId);
+  }, [handleWSEvent, handleStatusChange]);
 
   useEffect(() => {
     return () => {
@@ -244,11 +306,13 @@ export default function Home() {
         if (sessionRes.ok) {
           const sessionData = await sessionRes.json();
           setBudgetSpent(sessionData.budget_spent || 0);
+          setCartTotal(sessionData.cart_total || 0);
+          if (sessionData.budget_limit) setBudgetLimit(sessionData.budget_limit);
         }
       } catch {
         // network error during polling — non-critical
       }
-    }, 3000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [sessionId]);
@@ -281,6 +345,13 @@ export default function Home() {
           </span>
         </div>
         <div className="flex items-center gap-4 text-xs text-zinc-400">
+          <button
+            onClick={resetSession}
+            className="text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white px-2.5 py-1 rounded-md transition-colors border border-zinc-700/60"
+            title="Start a fresh session with a new budget"
+          >
+            + New Session
+          </button>
           <span className="hidden md:inline">Session: <code className="text-zinc-500">{sessionId.slice(0, 16)}...</code></span>
           <span className="flex items-center gap-1">
             <span className={`w-1.5 h-1.5 rounded-full ${statusColor} ${connectionStatus === "connected" ? "animate-pulse" : ""}`} />
@@ -322,6 +393,7 @@ export default function Home() {
             mandates={mandates}
             budgetLimit={budgetLimit}
             budgetSpent={budgetSpent}
+            cartTotal={cartTotal}
           />
         </div>
 

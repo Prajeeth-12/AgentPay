@@ -6,6 +6,7 @@ interface MandateViewerProps {
   mandates: Mandate[];
   budgetLimit: number;
   budgetSpent: number;
+  cartTotal?: number;
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -23,9 +24,10 @@ const STATUS_COLORS: Record<string, string> = {
   created: "bg-amber-500/20 text-amber-300 border-amber-500/30",
 };
 
-export function MandateViewer({ mandates, budgetLimit, budgetSpent }: MandateViewerProps) {
-  const remaining = budgetLimit - budgetSpent;
-  const spentPercent = budgetLimit > 0 ? (budgetSpent / budgetLimit) * 100 : 0;
+export function MandateViewer({ mandates, budgetLimit, budgetSpent, cartTotal = 0 }: MandateViewerProps) {
+  const totalAllocated = budgetSpent + cartTotal;
+  const remaining = Math.max(0, budgetLimit - totalAllocated);
+  const spentPercent = budgetLimit > 0 ? (totalAllocated / budgetLimit) * 100 : 0;
 
   return (
     <div className="flex flex-col h-full">
@@ -39,12 +41,12 @@ export function MandateViewer({ mandates, budgetLimit, budgetSpent }: MandateVie
         {/* Budget Gauge */}
         <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Budget</span>
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Budget Allocation</span>
+            <span className="text-xs font-semibold text-emerald-400">
               ₹{(remaining / 100).toLocaleString("en-IN")} remaining
             </span>
           </div>
-          <div className="w-full bg-zinc-700 rounded-full h-3 overflow-hidden" role="progressbar" aria-valuenow={budgetSpent} aria-valuemin={0} aria-valuemax={budgetLimit} aria-label="Budget usage">
+          <div className="w-full bg-zinc-700 rounded-full h-3 overflow-hidden" role="progressbar" aria-valuenow={totalAllocated} aria-valuemin={0} aria-valuemax={budgetLimit} aria-label="Budget usage">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
                 spentPercent > 90 ? "bg-red-500" :
@@ -53,9 +55,19 @@ export function MandateViewer({ mandates, budgetLimit, budgetSpent }: MandateVie
               style={{ width: `${Math.min(spentPercent, 100)}%` }}
             />
           </div>
-          <div className="flex justify-between mt-2 text-xs text-zinc-500">
-            <span>₹{(budgetSpent / 100).toLocaleString("en-IN")} spent</span>
-            <span>₹{(budgetLimit / 100).toLocaleString("en-IN")} limit</span>
+          <div className="grid grid-cols-3 mt-3 text-[11px] text-zinc-400 bg-zinc-900/60 p-2 rounded-lg text-center">
+            <div>
+              <div className="text-zinc-500">In Cart</div>
+              <div className="font-semibold text-zinc-200">₹{(cartTotal / 100).toLocaleString("en-IN")}</div>
+            </div>
+            <div>
+              <div className="text-zinc-500">Paid</div>
+              <div className="font-semibold text-zinc-200">₹{(budgetSpent / 100).toLocaleString("en-IN")}</div>
+            </div>
+            <div>
+              <div className="text-zinc-500">Limit</div>
+              <div className="font-semibold text-blue-400">₹{(budgetLimit / 100).toLocaleString("en-IN")}</div>
+            </div>
           </div>
         </div>
 

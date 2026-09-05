@@ -372,8 +372,14 @@ class ShoppingAgent:
                 "product": product["name"],
                 "price_display": f"₹{price / 100:,.0f}",
                 "quantity": quantity,
+                "cart_total": proposed_total,
+                "cart_total_display": f"₹{proposed_total / 100:,.0f}",
+                "budget_remaining": f"₹{(session['budget_limit'] - session['budget_spent'] - proposed_total) / 100:,.0f}",
             },
-            "events": [{"type": "cart_updated", "action": "added", "product_id": product["id"]}],
+            "events": [
+                {"type": "cart_updated", "action": "added", "product_id": product["id"], "cart_total": proposed_total},
+                {"type": "budget_update", "spent": session["budget_spent"], "cart_total": proposed_total, "limit": session["budget_limit"]},
+            ],
         }
 
     async def _tool_view_cart(self) -> dict:
@@ -416,7 +422,7 @@ class ShoppingAgent:
                 "budget_remaining": f"₹{(session['budget_limit'] - session['budget_spent'] - total) / 100:,.0f}",
                 "item_count": len(cart_items),
             },
-            "events": [],
+            "events": [{"type": "budget_update", "spent": session["budget_spent"], "cart_total": total, "limit": session["budget_limit"]}],
         }
 
     async def _tool_remove_from_cart(self, input: dict) -> dict:
@@ -427,6 +433,18 @@ class ShoppingAgent:
                 (self.session_id, input["product_id"]),
             )
             await db.commit()
+
+            cursor = await db.execute(
+                "SELECT budget_limit, budget_spent FROM sessions WHERE id = ?",
+                (self.session_id,),
+            )
+            session = await cursor.fetchone()
+            existing = await db.execute(
+                "SELECT SUM(price * quantity) as cart_total FROM cart_items WHERE session_id = ?",
+                (self.session_id,),
+            )
+            cart_row = await existing.fetchone()
+            new_cart_total = cart_row["cart_total"] or 0
         finally:
             await db.close()
 
@@ -439,7 +457,10 @@ class ShoppingAgent:
 
         return {
             "data": {"removed": True, "product_id": input["product_id"]},
-            "events": [{"type": "cart_updated", "action": "removed", "product_id": input["product_id"]}],
+            "events": [
+                {"type": "cart_updated", "action": "removed", "product_id": input["product_id"], "cart_total": new_cart_total},
+                {"type": "budget_update", "spent": session["budget_spent"] if session else 0, "cart_total": new_cart_total, "limit": session["budget_limit"] if session else 0},
+            ],
         }
 
     async def _tool_execute_payment(self) -> dict:

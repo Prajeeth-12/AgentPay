@@ -130,11 +130,21 @@ async def get_session(session_id: str):
     try:
         cursor = await db.execute("SELECT * FROM sessions WHERE id = ?", (session_id,))
         row = await cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Session not found")
+        session_dict = dict(row)
+
+        cart_cursor = await db.execute("SELECT * FROM cart_items WHERE session_id = ?", (session_id,))
+        cart_rows = await cart_cursor.fetchall()
+        cart_items = [dict(r) for r in cart_rows]
+        cart_total = sum(r["price"] * r["quantity"] for r in cart_items)
+
+        session_dict["cart_total"] = cart_total
+        session_dict["cart_count"] = len(cart_items)
+        session_dict["cart_items"] = cart_items
     finally:
         await db.close()
-    if not row:
-        raise HTTPException(status_code=404, detail="Session not found")
-    return dict(row)
+    return session_dict
 
 
 @app.get("/api/sessions/{session_id}/mandates")
