@@ -2,15 +2,15 @@
   {
     "@context": "https://schema.org",
     "@type": "Product",
-    "id": "prod_nike_pegasus_41",
-    "name": "Nike Air Zoom Pegasus 41",
-    "description": "Responsive cushioning for everyday runs with Zoom Air unit",
-    "brand": {"@type": "Brand", "name": "Nike"},
-    "category": "Footwear > Running Shoes",
-    "image": "/images/nike-pegasus.jpg",
+    "id": "prod_sports_straw_brush",
+    "name": "Sports Sipper Straw & Bottle Cleaning Brush",
+    "description": "Flexible stainless steel wire cleaning brush with nylon bristles",
+    "brand": {"@type": "Brand", "name": "FitKit"},
+    "category": "Footwear > Accessories",
+    "image": "/images/straw-brush.jpg",
     "offers": {
       "@type": "Offer",
-      "price": 179900,
+      "price": 4900,
       "priceCurrency": "INR",
       "availability": "https://schema.org/InStock",
       "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
@@ -19,15 +19,338 @@
   {
     "@context": "https://schema.org",
     "@type": "Product",
-    "id": "prod_adidas_ultraboost_24",
-    "name": "Adidas Ultraboost Light 24",
-    "description": "Lightweight boost midsole for energy return on long runs",
-    "brand": {"@type": "Brand", "name": "Adidas"},
-    "category": "Footwear > Running Shoes",
-    "image": "/images/adidas-ultraboost.jpg",
+    "id": "prod_fastandup_energy_gel",
+    "name": "Fast&Up Energy Gel (Orange Flavour, 30g)",
+    "description": "Instant energy boost gel with maltodextrin and caffeine for runners",
+    "brand": {"@type": "Brand", "name": "Fast&Up"},
+    "category": "Footwear > Accessories",
+    "image": "/images/energy-gel.jpg",
     "offers": {
       "@type": "Offer",
-      "price": 189900,
+      "price": 7900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_microfiber_cloth",
+    "name": "Premium Microfiber Screen & Lens Cleaning Cloth (Pack of 2)",
+    "description": "Ultra-soft lint-free microfiber cloth for smartphones, laptops, and glasses",
+    "brand": {"@type": "Brand", "name": "TechShield"},
+    "category": "Electronics > Accessories",
+    "image": "/images/microfiber-cloth.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 9900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_usbc_cable_1m",
+    "name": "Braided 60W USB-C to USB-C Fast Charging Cable (1m)",
+    "description": "Durable nylon braided high-speed sync and PD charging cable",
+    "brand": {"@type": "Brand", "name": "Portronics"},
+    "category": "Electronics > Accessories",
+    "image": "/images/usbc-cable.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 14900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_decathlon_running_socks",
+    "name": "Decathlon Kiprun Breathable Running Socks (Pack of 3)",
+    "description": "Anti-blister, sweat-wicking low-cut running socks with arch support",
+    "brand": {"@type": "Brand", "name": "Kiprun"},
+    "category": "Footwear > Accessories",
+    "image": "/images/running-socks.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 19900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_portronics_clean_kit",
+    "name": "Portronics Clean-O 7-in-1 Tech Cleaning Kit",
+    "description": "Multi-function cleaner for earbuds, keyboard switches, screens, and cameras",
+    "brand": {"@type": "Brand", "name": "Portronics"},
+    "category": "Electronics > Accessories",
+    "image": "/images/clean-kit.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 24900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_steel_water_bottle",
+    "name": "Stainless Steel Insulated Sports Bottle (750ml)",
+    "description": "BPA-free single-wall stainless steel hydration bottle with leakproof cap",
+    "brand": {"@type": "Brand", "name": "Cello"},
+    "category": "Footwear > Accessories",
+    "image": "/images/water-bottle.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 29900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_wrist_rest_pad",
+    "name": "Ergonomic Memory Foam Mouse Pad with Wrist Support",
+    "description": "Non-slip rubber base with premium memory foam wrist cushion",
+    "brand": {"@type": "Brand", "name": "Tukzer"},
+    "category": "Electronics > Accessories",
+    "image": "/images/mouse-pad.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 34900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_boldfit_sweatband_set",
+    "name": "Boldfit Running Headband & Wristband Set",
+    "description": "High-absorption stretch cotton sweatband combo for gym and marathon training",
+    "brand": {"@type": "Brand", "name": "Boldfit"},
+    "category": "Clothing > Sportswear",
+    "image": "/images/sweatband-set.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 39900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_premium_insoles",
+    "name": "Dr. Scholl's Performance Insoles",
+    "description": "Triple-zone cushioning for running and athletic activities",
+    "brand": {"@type": "Brand", "name": "Dr. Scholl's"},
+    "category": "Footwear > Accessories",
+    "image": "/images/insoles.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 49900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_atomic_habits",
+    "name": "Atomic Habits by James Clear",
+    "description": "Proven framework for building good habits and breaking bad ones",
+    "brand": {"@type": "Brand", "name": "Penguin"},
+    "category": "Books > Self-Help",
+    "image": "/images/atomic-habits.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 49900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "BookWorld", "id": "merchant_bookworld"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_mi_20w_charger",
+    "name": "Xiaomi 20W Type-C Fast Charger",
+    "description": "Compact PD fast adapter with smart surge protection for iOS and Android",
+    "brand": {"@type": "Brand", "name": "Xiaomi"},
+    "category": "Electronics > Chargers",
+    "image": "/images/mi-charger.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 59900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_sandisk_64gb_microsd",
+    "name": "SanDisk Ultra 64GB MicroSDXC Card (100MB/s)",
+    "description": "Class 10 U1 high-speed memory card with full-size SD adapter",
+    "brand": {"@type": "Brand", "name": "SanDisk"},
+    "category": "Electronics > Accessories",
+    "image": "/images/sandisk-64gb.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 69900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_bewakoof_oversized",
+    "name": "Bewakoof Heavy Duty Oversized T-Shirt",
+    "description": "300 GSM heavyweight cotton oversized fit streetwear tee",
+    "brand": {"@type": "Brand", "name": "Bewakoof"},
+    "category": "Clothing > T-Shirts",
+    "image": "/images/bewakoof-oversized.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 79900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "FashionHub", "id": "merchant_fashionhub"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_keychron_k2",
+    "name": "Keychron K2 Pro Mechanical Keyboard",
+    "description": "75% wireless mechanical keyboard with hot-swappable switches",
+    "brand": {"@type": "Brand", "name": "Keychron"},
+    "category": "Electronics > Accessories",
+    "image": "/images/keychron-k2.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 89900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_system_design",
+    "name": "System Design Interview Vol. 2",
+    "description": "Step-by-step framework for system design interviews by Alex Xu",
+    "brand": {"@type": "Brand", "name": "ByteByteGo"},
+    "category": "Books > Technology",
+    "image": "/images/system-design.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 89900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "BookWorld", "id": "merchant_bookworld"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_uniqlo_airism_tee",
+    "name": "Uniqlo AIRism Cotton Crew Neck T-Shirt",
+    "description": "Ultra-smooth cotton blend with quick-dry AIRism technology",
+    "brand": {"@type": "Brand", "name": "Uniqlo"},
+    "category": "Clothing > T-Shirts",
+    "image": "/images/uniqlo-airism.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 99900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "FashionHub", "id": "merchant_fashionhub"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_logitech_mx_master",
+    "name": "Logitech MX Master 3S",
+    "description": "Ergonomic wireless mouse with MagSpeed scroll and USB-C charging",
+    "brand": {"@type": "Brand", "name": "Logitech"},
+    "category": "Electronics > Accessories",
+    "image": "/images/logitech-mx.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 109900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_anker_powerbank",
+    "name": "Anker 737 Power Bank 24000mAh",
+    "description": "140W bidirectional USB-C charging with smart display",
+    "brand": {"@type": "Brand", "name": "Anker"},
+    "category": "Electronics > Chargers",
+    "image": "/images/anker-powerbank.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 129900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_nb_fuelcell",
+    "name": "New Balance FuelCell Rebel v4",
+    "description": "Lightweight race-day shoe with FuelCell midsole technology",
+    "brand": {"@type": "Brand", "name": "New Balance"},
+    "category": "Footwear > Running Shoes",
+    "image": "/images/nb-fuelcell.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 149900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_nike_dri_fit",
+    "name": "Nike Dri-FIT Running Shorts",
+    "description": "Sweat-wicking fabric with built-in brief for comfortable runs",
+    "brand": {"@type": "Brand", "name": "Nike"},
+    "category": "Clothing > Sportswear",
+    "image": "/images/nike-shorts.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 149900,
       "priceCurrency": "INR",
       "availability": "https://schema.org/InStock",
       "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
@@ -53,6 +376,91 @@
   {
     "@context": "https://schema.org",
     "@type": "Product",
+    "id": "prod_kindle_paperwhite",
+    "name": "Kindle Paperwhite (2024)",
+    "description": "6.8 inch glare-free display with adjustable warm light, 16GB",
+    "brand": {"@type": "Brand", "name": "Amazon"},
+    "category": "Electronics > E-Readers",
+    "image": "/images/kindle-paperwhite.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 169900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_nike_pegasus_41",
+    "name": "Nike Air Zoom Pegasus 41",
+    "description": "Responsive cushioning for everyday runs with Zoom Air unit",
+    "brand": {"@type": "Brand", "name": "Nike"},
+    "category": "Footwear > Running Shoes",
+    "image": "/images/nike-pegasus.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 179900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_jbl_charge5",
+    "name": "JBL Charge 5",
+    "description": "Portable Bluetooth speaker with IP67 waterproof and 20h battery",
+    "brand": {"@type": "Brand", "name": "JBL"},
+    "category": "Electronics > Audio",
+    "image": "/images/jbl-charge5.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 179900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_adidas_ultraboost_24",
+    "name": "Adidas Ultraboost Light 24",
+    "description": "Lightweight boost midsole for energy return on long runs",
+    "brand": {"@type": "Brand", "name": "Adidas"},
+    "category": "Footwear > Running Shoes",
+    "image": "/images/adidas-ultraboost.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 189900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_hm_hoodie",
+    "name": "H&M Relaxed Fit Hoodie",
+    "description": "Soft cotton-blend hoodie with kangaroo pocket and drawstring hood",
+    "brand": {"@type": "Brand", "name": "H&M"},
+    "category": "Clothing > Hoodies",
+    "image": "/images/hm-hoodie.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 199900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "FashionHub", "id": "merchant_fashionhub"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
     "id": "prod_asics_gel_kayano",
     "name": "ASICS Gel-Kayano 31",
     "description": "Maximum stability running shoe with FF Blast Plus cushioning",
@@ -70,40 +478,6 @@
   {
     "@context": "https://schema.org",
     "@type": "Product",
-    "id": "prod_nb_fuelcell",
-    "name": "New Balance FuelCell Rebel v4",
-    "description": "Lightweight race-day shoe with FuelCell midsole technology",
-    "brand": {"@type": "Brand", "name": "New Balance"},
-    "category": "Footwear > Running Shoes",
-    "image": "/images/nb-fuelcell.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 149900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_nike_dunk_low",
-    "name": "Nike Dunk Low Retro",
-    "description": "Classic basketball-inspired sneaker with leather upper",
-    "brand": {"@type": "Brand", "name": "Nike"},
-    "category": "Footwear > Casual Shoes",
-    "image": "/images/nike-dunk.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 899900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
     "id": "prod_samsung_galaxy_buds3",
     "name": "Samsung Galaxy Buds3 Pro",
     "description": "AI-powered active noise cancellation with 360 Audio",
@@ -113,6 +487,40 @@
     "offers": {
       "@type": "Offer",
       "price": 249900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_fire_boltt_phoenix",
+    "name": "Fire-Boltt Phoenix Ultra",
+    "description": "1.43 inch AMOLED display smartwatch with Bluetooth calling",
+    "brand": {"@type": "Brand", "name": "Fire-Boltt"},
+    "category": "Electronics > Wearables",
+    "image": "/images/fireboltt-phoenix.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 249900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_apple_watch_se",
+    "name": "Apple Watch SE (3rd Gen)",
+    "description": "Essential health and fitness tracking with crash detection",
+    "brand": {"@type": "Brand", "name": "Apple"},
+    "category": "Electronics > Wearables",
+    "image": "/images/apple-watch-se.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 299900,
       "priceCurrency": "INR",
       "availability": "https://schema.org/InStock",
       "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
@@ -155,125 +563,6 @@
   {
     "@context": "https://schema.org",
     "@type": "Product",
-    "id": "prod_jbl_charge5",
-    "name": "JBL Charge 5",
-    "description": "Portable Bluetooth speaker with IP67 waterproof and 20h battery",
-    "brand": {"@type": "Brand", "name": "JBL"},
-    "category": "Electronics > Audio",
-    "image": "/images/jbl-charge5.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 179900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_apple_watch_se",
-    "name": "Apple Watch SE (3rd Gen)",
-    "description": "Essential health and fitness tracking with crash detection",
-    "brand": {"@type": "Brand", "name": "Apple"},
-    "category": "Electronics > Wearables",
-    "image": "/images/apple-watch-se.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 299900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_fire_boltt_phoenix",
-    "name": "Fire-Boltt Phoenix Ultra",
-    "description": "1.43 inch AMOLED display smartwatch with Bluetooth calling",
-    "brand": {"@type": "Brand", "name": "Fire-Boltt"},
-    "category": "Electronics > Wearables",
-    "image": "/images/fireboltt-phoenix.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 249900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_kindle_paperwhite",
-    "name": "Kindle Paperwhite (2024)",
-    "description": "6.8 inch glare-free display with adjustable warm light, 16GB",
-    "brand": {"@type": "Brand", "name": "Amazon"},
-    "category": "Electronics > E-Readers",
-    "image": "/images/kindle-paperwhite.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 169900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_logitech_mx_master",
-    "name": "Logitech MX Master 3S",
-    "description": "Ergonomic wireless mouse with MagSpeed scroll and USB-C charging",
-    "brand": {"@type": "Brand", "name": "Logitech"},
-    "category": "Electronics > Accessories",
-    "image": "/images/logitech-mx.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 109900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_keychron_k2",
-    "name": "Keychron K2 Pro Mechanical Keyboard",
-    "description": "75% wireless mechanical keyboard with hot-swappable switches",
-    "brand": {"@type": "Brand", "name": "Keychron"},
-    "category": "Electronics > Accessories",
-    "image": "/images/keychron-k2.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 89900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_uniqlo_airism_tee",
-    "name": "Uniqlo AIRism Cotton Crew Neck T-Shirt",
-    "description": "Ultra-smooth cotton blend with quick-dry AIRism technology",
-    "brand": {"@type": "Brand", "name": "Uniqlo"},
-    "category": "Clothing > T-Shirts",
-    "image": "/images/uniqlo-airism.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 99900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "FashionHub", "id": "merchant_fashionhub"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
     "id": "prod_levis_511_slim",
     "name": "Levi's 511 Slim Fit Jeans",
     "description": "Classic slim fit jeans with stretch denim for all-day comfort",
@@ -291,125 +580,6 @@
   {
     "@context": "https://schema.org",
     "@type": "Product",
-    "id": "prod_bewakoof_oversized",
-    "name": "Bewakoof Heavy Duty Oversized T-Shirt",
-    "description": "300 GSM heavyweight cotton oversized fit streetwear tee",
-    "brand": {"@type": "Brand", "name": "Bewakoof"},
-    "category": "Clothing > T-Shirts",
-    "image": "/images/bewakoof-oversized.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 79900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "FashionHub", "id": "merchant_fashionhub"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_hm_hoodie",
-    "name": "H&M Relaxed Fit Hoodie",
-    "description": "Soft cotton-blend hoodie with kangaroo pocket and drawstring hood",
-    "brand": {"@type": "Brand", "name": "H&M"},
-    "category": "Clothing > Hoodies",
-    "image": "/images/hm-hoodie.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 199900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "FashionHub", "id": "merchant_fashionhub"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_nike_dri_fit",
-    "name": "Nike Dri-FIT Running Shorts",
-    "description": "Sweat-wicking fabric with built-in brief for comfortable runs",
-    "brand": {"@type": "Brand", "name": "Nike"},
-    "category": "Clothing > Sportswear",
-    "image": "/images/nike-shorts.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 149900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_premium_insoles",
-    "name": "Dr. Scholl's Performance Insoles",
-    "description": "Triple-zone cushioning for running and athletic activities",
-    "brand": {"@type": "Brand", "name": "Dr. Scholl's"},
-    "category": "Footwear > Accessories",
-    "image": "/images/insoles.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 49900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_anker_powerbank",
-    "name": "Anker 737 Power Bank 24000mAh",
-    "description": "140W bidirectional USB-C charging with smart display",
-    "brand": {"@type": "Brand", "name": "Anker"},
-    "category": "Electronics > Chargers",
-    "image": "/images/anker-powerbank.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 129900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_atomic_habits",
-    "name": "Atomic Habits by James Clear",
-    "description": "Proven framework for building good habits and breaking bad ones",
-    "brand": {"@type": "Brand", "name": "Penguin"},
-    "category": "Books > Self-Help",
-    "image": "/images/atomic-habits.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 49900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "BookWorld", "id": "merchant_bookworld"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "id": "prod_system_design",
-    "name": "System Design Interview Vol. 2",
-    "description": "Step-by-step framework for system design interviews by Alex Xu",
-    "brand": {"@type": "Brand", "name": "ByteByteGo"},
-    "category": "Books > Technology",
-    "image": "/images/system-design.jpg",
-    "offers": {
-      "@type": "Offer",
-      "price": 89900,
-      "priceCurrency": "INR",
-      "availability": "https://schema.org/InStock",
-      "seller": {"@type": "Organization", "name": "BookWorld", "id": "merchant_bookworld"}
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
     "id": "prod_mi_band_9",
     "name": "Xiaomi Smart Band 9",
     "description": "1.62 inch AMOLED with 5ATM water resistance and 16-day battery",
@@ -419,6 +589,74 @@
     "offers": {
       "@type": "Offer",
       "price": 349900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_bose_soundlink_flex",
+    "name": "Bose SoundLink Flex Portable Bluetooth Speaker",
+    "description": "PositionIQ technology with deep bass, IP67 waterproof and rugged design",
+    "brand": {"@type": "Brand", "name": "Bose"},
+    "category": "Electronics > Audio",
+    "image": "/images/bose-flex.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 499900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_nike_dunk_low",
+    "name": "Nike Dunk Low Retro",
+    "description": "Classic basketball-inspired sneaker with leather upper",
+    "brand": {"@type": "Brand", "name": "Nike"},
+    "category": "Footwear > Casual Shoes",
+    "image": "/images/nike-dunk.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 899900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "SportsDirect India", "id": "merchant_sportsdirect"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_sony_xm5_flagship",
+    "name": "Sony WH-1000XM5 Wireless Noise Canceling Headphones",
+    "description": "Auto NC Optimizer with 8 microphones and 30-hour battery life",
+    "brand": {"@type": "Brand", "name": "Sony"},
+    "category": "Electronics > Audio",
+    "image": "/images/sony-xm5.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 1299900,
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "id": "prod_apple_ipad_10th_gen",
+    "name": "Apple iPad 10th Gen (10.9-inch, Wi-Fi, 64GB)",
+    "description": "Liquid Retina display, A14 Bionic chip with Touch ID and USB-C",
+    "brand": {"@type": "Brand", "name": "Apple"},
+    "category": "Electronics > Tablets",
+    "image": "/images/apple-ipad.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": 1499900,
       "priceCurrency": "INR",
       "availability": "https://schema.org/InStock",
       "seller": {"@type": "Organization", "name": "TechBazaar", "id": "merchant_techbazaar"}

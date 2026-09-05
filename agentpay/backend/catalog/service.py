@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from typing import Optional
 
 CATALOG_PATH = os.path.join(os.path.dirname(__file__), "data", "products.json")
@@ -20,7 +21,7 @@ def search_products(
     category: str = "",
     max_price: int = 0,
     min_price: int = 0,
-    limit: int = 10,
+    limit: int = 20,
 ) -> list[dict]:
     products = _load_catalog()
     results = []
@@ -30,8 +31,18 @@ def search_products(
         "products", "product", "all", "items", "item", "anything", "catalog",
         "everything", "goods", "shop", "what", "there", "list", "show", "under",
         "below", "less", "than", "for", "with", "rupees", "rupee", "rs", "inr",
-        "and", "the", "find", "get", "buy", "me", "some", "give", "available"
+        "and", "the", "find", "get", "buy", "me", "some", "give", "available", "suggest"
     }
+
+    # Extract price constraints directly from query if not provided
+    if not max_price:
+        match_max = re.search(r'(?:under|below|less\s+than|upto|within|max|budget(?:\s+of)?)\s*(?:₹|rs\.?|inr)?\s*(\d+)', query_lower)
+        if match_max:
+            try:
+                parsed = int(match_max.group(1))
+                max_price = parsed * 100 if parsed < 10000 else parsed
+            except ValueError:
+                pass
 
     # Normalize max_price if passed in Rupees instead of paise (e.g. 2000 -> 200000)
     if max_price:

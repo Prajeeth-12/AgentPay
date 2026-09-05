@@ -82,7 +82,7 @@ class ShoppingAgent:
             f"- Budget spent: ₹{budget_spent / 100:,.0f}\n"
             f"- Budget remaining: ₹{remaining / 100:,.0f}\n"
             f"- {cart_desc}\n"
-            f"- Available Store Categories: Footwear (Running & Casual Shoes), Electronics (Audio, Wearables, E-Readers, Accessories), Clothing (T-Shirts, Jeans, Hoodies), Books (Tech & Self-Help).\n"
+            f"- Available Store Categories & Price Ranges: Micro items (₹49-₹499: accessories, cables, cleaning kits, socks, energy gels), Footwear (₹1,499-₹8,999: running & casual shoes), Electronics (₹99-₹14,999: audio, chargers, tablets, wearables, accessories), Clothing (₹399-₹3,499: t-shirts, hoodies, jeans, sportswear), Books (₹499-₹899: tech & self-help).\n"
             f"- Session ID: {self.session_id}\n"
         )
 
